@@ -87,7 +87,7 @@ async function get_list() {
     let list = [];
     for(let i = 0; i < rows.length; i++) {
         let dt = await db.collection("Knowledge").get(rows[i]['key']);
-        list.push(dt['props']['data']);
+        list.push(dt['props']['knowledge']);
     }
     return list;
 }
