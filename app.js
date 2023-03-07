@@ -72,7 +72,7 @@ async function _id() {
     let rows = await db.collection("Knowledge").list();
     rows = rows['results'];
     let id = rows.length;
-    console.log(id);
+    return id;
 }
 
 async function add_knowledge(knowledge) {
