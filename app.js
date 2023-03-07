@@ -51,17 +51,20 @@ async function search_wiki(question) {
     let origin_q = question;
     if (question.includes("what is") || question.includes("what is") && question.includes("?") || question.includes("define")) {
         question = question.replace("what is", "").replace("?", "").replace("define", "").trim();
-    }
-    let url = `https://en.wikipedia.org/api/rest_v1/page/summary/${question}?redirect=true`;
-    let response = await axios.get(url);
-    let data = response.data;
-    if (data['extract']) {
-        let knowledge = {
-            keywords: origin_q.split(" ").join(" & ").replace("?", ""),
-            response: data['extract']
-        };
-        await add_knowledge(knowledge);
-        return data['extract'];
+        let url = `https://en.wikipedia.org/api/rest_v1/page/summary/${question}?redirect=true`;
+        let response = await axios.get(url);
+        let data = response.data;
+        if (data['extract']) {
+            let knowledge = {
+                keywords: origin_q.split(" ").join(" & ").replace("?", ""),
+                response: data['extract']
+            };
+            await add_knowledge(knowledge);
+            return data['extract'];
+        }
+        else {
+            return "Sorry, I don't know that";
+        }
     }
     else {
         return "Sorry, I don't know that";
@@ -78,14 +81,14 @@ async function _id() {
 async function add_knowledge(knowledge) {
     // await client.connect();
     let id = await _id();
-    await db.collection("Knowledge").set(id.toString(), {knowledge});
+    await db.collection("Knowledge").set(id.toString(), { knowledge });
 }
 
 async function get_list() {
     let rows = await db.collection("Knowledge").list();
     rows = rows['results'];
     let list = [];
-    for(let i = 0; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
         let dt = await db.collection("Knowledge").get(rows[i]['key']);
         list.push(dt['props']['knowledge']);
     }
