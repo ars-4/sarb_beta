@@ -13,14 +13,6 @@ const axios = require('axios');
 const db = require("@cyclic.sh/dynamodb")
 
 
-
-// Credentials
-// process.env.AWS_REGION = "ap-northeast-1"
-// process.env.AWS_ACCESS_KEY_ID = "ASIAXIZO7E57DZVSZVUB"
-// process.env.AWS_SECRET_ACCESS_KEY = "XyzJ5lcbrsvBndFBC6U0D9VTQOi0P4+usooxbUq+"
-// process.env.AWS_SESSION_TOKEN = "IQoJb3JpZ2luX2VjEEkaCmFwLXNvdXRoLTEiRjBEAiBsF5+aeSoUMUyX2ReWOUXaOzVLFVdNcU2VqnpJwNhIMwIgS74AZDZ5nM/JzgtQJlQUvlKOiLtZw/yVxdo/kYbSmXcqtgII8///////////ARAAGgw0OTk5MjUzMjk3OTAiDBe/xFaWZ+lm78MlpSqKAgRESgDBCC1WXM2kRJyiss/tr5VYOpjc5Hrdl8KKfyEiUAw2ai32XNv0qMPAiAsmM2CWqTyiEd5rbkc4mu2UX4IJBTug2ReVJTmpbawqEfhfdr8+hsf28bvxdwhmvacBs3Fam2ZZM6u3PAm2Bd6q9R7tj3fJjNj97bcj5wdYv6Hxs9xyNmbHmMX4iWwBDIIfW1kZVha8KJzhEOWs1g9ZszdyGeJdpcBLZGgXHpmvxPoY+jfW0L0b2qvkuL0b/eBPsLU7OhFx3sTRZCz1QrmE/9kSjBpEWOB+hizayrl6xfGyV8YnMG7oiwbHNimkSS/GBaVaLTr1pYrqfJw5Sx173x6uS1ztp2dMU+kfMN6ik6AGOp4BqtAHhvMCySQ5p/IZByYu8cofMjAvQ31PYYijqUSnFtjVTO9IyQN8mlHSZQDyK2HEIVkoq9KVfp3YSMc6lMI4PgdBPIIZfNpy60syg54apku0qFP7Q+DaLF0eYpMwBRttJYfgIe0IRMY0P+P797hklzLHuE32IBGaUwl6HCnoBT6S35Ji0HaPNKpDb7fUkghzQ4GlRDZxQKeM9Eb4ofg="
-
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -60,7 +52,6 @@ async function search_wiki(question) {
     if (question.includes("what is") || question.includes("what is") && question.includes("?") || question.includes("define")) {
         question = question.replace("what is", "").replace("?", "").replace("define", "").trim();
     }
-    console.log(question)
     let url = `https://en.wikipedia.org/api/rest_v1/page/summary/${question}?redirect=true`;
     let response = await axios.get(url);
     let data = response.data;
@@ -77,18 +68,36 @@ async function search_wiki(question) {
     }
 }
 
-async function add_knowledge(knowledge) {
-    // await client.connect();
-    await db.collection("Knowledge").set(knowledge);
+async function _id() {
+    let rows = await db.collection("Knowledge").list();
+    rows = rows['results'];
+    let id = rows.length;
+    console.log(id);
 }
 
+async function add_knowledge(knowledge) {
+    // await client.connect();
+    let id = await _id();
+    await db.collection("Knowledge").set(id.toString(), {knowledge});
+}
+
+async function get_list() {
+    let rows = await db.collection("Knowledge").list();
+    rows = rows['results'];
+    let list = [];
+    for(let i = 0; i < rows.length; i++) {
+        let dt = await db.collection("Knowledge").get(rows[i]['key']);
+        list.push(dt['props']['data']);
+    }
+    return list;
+}
 
 async function read_knowledge() {
     let replies = [];
     // await client.connect();
     // const cursor = collection.find();
     // const rows = await cursor.toArray();
-    const rows = await db.collection("Knowledge").list()
+    const rows = await get_list();
 
     for (let i = 0; i < rows.length; i++) {
         let command = {};
