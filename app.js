@@ -59,7 +59,7 @@ async function search_wiki(question) {
         await axios.get(url).then((response) => {
             let knowledge = {
                 keywords: origin_q.split(" ").join(" & ").replace("?", ""),
-                response: data
+                response: response.data['extract']
             };
             add_knowledge(knowledge);
             console.log(`Added ${knowledge.keywords} to knowledge`);
