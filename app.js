@@ -55,20 +55,19 @@ async function search_wiki(question) {
         }
         console.log(`Searching wikipedia for ${question}`);
         let url = `https://en.wikipedia.org/api/rest_v1/page/summary/${question}?redirect=true`;
-        let response = await axios.get(url);
-        let data = response.data;
-        if (data['extract']) {
+
+        await axios.get(url).then((response) => {
             let knowledge = {
                 keywords: origin_q.split(" ").join(" & ").replace("?", ""),
-                response: data['extract']
+                response: data
             };
-            await add_knowledge(knowledge);
+            add_knowledge(knowledge);
             console.log(`Added ${knowledge.keywords} to knowledge`);
-            return data['extract'];
-        }
-        else {
+            return response.data['extract'];
+        }).catch((error) => {
+            console.log("Error while searching wikipedia");
             return "Sorry, I don't know that";
-        }
+        });
     }
     else {
         return "Sorry, I don't know that";
