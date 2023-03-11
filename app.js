@@ -56,7 +56,7 @@ async function search_wiki(question) {
         console.log(`Searching wikipedia for ${question}`);
         let url = `https://en.wikipedia.org/api/rest_v1/page/summary/${question}?redirect=true`;
 
-        await axios.get(url).then((response) => {
+        let data = await axios.get(url).then((response) => {
             let knowledge = {
                 keywords: origin_q.split(" ").join(" & ").replace("?", ""),
                 response: response.data['extract']
@@ -68,6 +68,7 @@ async function search_wiki(question) {
             console.log("Error while searching wikipedia");
             return "Sorry, I don't know that";
         });
+        return data;
     }
     else {
         return "Sorry, I don't know that";
