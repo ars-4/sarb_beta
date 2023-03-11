@@ -47,6 +47,7 @@ app.listen(port, () => {
 
 
 async function search_wiki(question) {
+    console.log("searching wiki");
     let origin_q = question;
     if (question.includes("what is") || question.includes("what is") && question.includes("?") || question.includes("define")) {
         question = question.replace("what is", "").replace("?", "").replace("define", "").replace(" of ", "").replace(" the ", "").replace(" a ", "").replace(" an ", "").trim();
