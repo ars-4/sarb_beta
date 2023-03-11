@@ -9,7 +9,6 @@ const axios = require('axios');
 // const client = new mongoose.MongoClient(connection_string, { useNewUrlParser: true, useUnifiedTopology: true });
 // const db = client.db("sarb");
 // const collection = db.collection("knowledge");
-
 const db = require("@cyclic.sh/dynamodb")
 
 
@@ -130,13 +129,17 @@ async function get_reply(question) {
                     reply = null
                 }
             }
+            break;
         }
         else {
             reply = null
         }
     }
-    if (reply == null) {
+    if (reply === null) {
         reply = await search_wiki(question);
+    }
+    else {
+        return reply;
     }
     return reply;
 }
