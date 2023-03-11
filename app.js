@@ -49,7 +49,7 @@ app.listen(port, () => {
 async function search_wiki(question) {
     let origin_q = question;
     if (question.includes("what is") || question.includes("what is") && question.includes("?") || question.includes("define")) {
-        question = question.replace("what is", "").replace("?", "").replace("define", "").replace("of", "").replace("the", "").replace("a", "").replace("an", "").trim();
+        question = question.replace("what is", "").replace("?", "").replace("define", "").replace(" of ", "").replace(" the ", "").replace(" a ", "").replace(" an ", "").trim();
         let url = `https://en.wikipedia.org/api/rest_v1/page/summary/${question}?redirect=true`;
         let response = await axios.get(url);
         let data = response.data;
